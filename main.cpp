@@ -1,33 +1,48 @@
-#include <iostream>
+#include <QCoreApplication>
 #include "IOCContainer.h"
 #include "Computer.h"
 
-int main()
+// Инициализируем ненулевым числом, иначе будет ошибка при компиляции "неразрешенный внешний символ"
+int IOCContainer::s_nextTypeId = 1;
+
+int main(int argc, char *argv[])
 {
-    // Создаем контейнер IOC
+    // Создаем объект приложения QCoreApplication
+    QCoreApplication a(argc, argv);
+
+    // Создаем экземпляр контейнера для управления зависимостями (IOC)
     IOCContainer injector;
 
-    // Регистрируем фабрику для создания объекта AMDProcessor
-    injector.RegisterFactory<IProcessor, AMDProcessor, double, ProcessorType, std::string>();
+    // Регистрируем класс AMDProcessor как реализацию интерфейса IProcessor
+    injector.RegisterInstance<IProcessor, AMDProcessor>();
 
-    // Регистрируем фабрику для создания объекта IntelProcessor
-    injector.RegisterFactory<IProcessor, IntelProcessor, double, ProcessorType, std::string>();
+    // Первый тест
+    // Регистрируем класс IntelProcessor как реализацию интерфейса IProcessor
+    injector.RegisterInstance<IProcessor, IntelProcessor>();
 
-    // Создаем объекты компьютеров
-    Computer computer1;
-    Computer computer2;
+    // Получаем объект процессора через IOC-контейнер и устанавливаем его параметры
+    // В данном случае, используется реализация IntelProcessor с версией "Intel",
+    // типом процессора x86 и скоростью 4800
+    injector.GetObject<IProcessor>()->SetProcessor("Intel", ProcessorType::x86, 4800);
 
-    // Внедряем объект AMDProcessor в компьютер1
-    std::shared_ptr<IProcessor> AMDProcessor = injector.GetObject<IProcessor>();
-    computer1.SetProcessor(AMDProcessor);
+    // Создаем компьютер PK1 с помощью полученного объекта процессора
+    Computer PK1(injector.GetObject<IProcessor>().get());
 
-    // Внедряем объект IntelProcessor в компьютер2
-    std::shared_ptr<IProcessor> intelProcessor = injector.GetObject<IProcessor>();
-    computer2.SetProcessor(intelProcessor);
+    // Выводим информацию о процессоре, используемом в компьютере PK1
+    PK1.Info();
 
-    // Проверяем информацию о процессорах в компьютерах
-    std::cout << "Computer 1 Processor Info: " << computer1.GetProcessorInfo() << std::endl;
-    std::cout << "Computer 2 Processor Info: " << computer2.GetProcessorInfo() << std::endl;
+    // Второй тест
+    // Получаем объект процессора через IOC-контейнер и устанавливаем его параметры
+    // В данном случае, используется реализация AMDProcessor с версией "AMD",
+    // типом процессора x64 и скоростью 5200
+    injector.GetObject<IProcessor>()->SetProcessor("AMD", ProcessorType::x64, 5200);
 
-    return 0;
+    // Создаем компьютер PK2 с помощью полученного объекта процессора
+    Computer PK2(injector.GetObject<IProcessor>().get());
+
+    // Выводим информацию о процессоре, используемом в компьютере PK2
+    PK2.Info();
+
+    // Запускаем цикл обработки событий приложения и возвращаем его код завершения
+    return a.exec();
 }

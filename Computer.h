@@ -5,73 +5,106 @@
 using namespace std;
 
 enum ProcessorType
-{ x86,
-  x64
+{
+    x86 = 86,  // Тип процессора x86 с значением 86
+    x64 = 64   // Тип процессора x64 с значением 64
 };
 
-// Интерфейс IProcessor
 class IProcessor
 {
 public:
+    // Установка параметров процессора
+    virtual void SetProcessor(std::string version, ProcessorType type, double speed) = 0;
+
+    // Получение информации о процессоре
+    virtual void GetInfo() = 0;
+
+    // Виртуальный деструктор для правильного освобождения памяти
     virtual ~IProcessor() {}
-    virtual string GetProcessorInfo() = 0;
 };
 
-// Реализация IntelProcessor
+// Реализация процессора Intel
 class IntelProcessor : public IProcessor
 {
-private:
-    std::string m_version;
-    ProcessorType m_type;
-    double m_speed;
+protected:
+    std::string Version;       // Версия процессора
+    ProcessorType Type;        // Тип процессора
+    double Speed;              // Скорость процессора
 
 public:
-    IntelProcessor(double speed, ProcessorType type, std::string version)
-        : m_version(version), m_type(type), m_speed(speed)
-    {}
+    IntelProcessor() {}
 
-    std::string GetProcessorInfo() override
+    // Установка параметров процессора Intel
+    void SetProcessor(std::string version, ProcessorType type, double speed)
     {
-        return "Intel Processor: " + m_version + ", Speed: " + std::to_string(m_speed) + ", Type: " + std::to_string(static_cast<int>(m_type));
+        Version = version;
+        Type = type;
+        Speed = speed;
     }
+
+    // Получение информации о процессоре Intel
+    void GetInfo()
+    {
+        std::cout << "Processor for " << Version << " Speed: " << Speed << " Type: x" << Type << "\n";
+    }
+
+    // Деструктор процессора Intel
+    ~IntelProcessor() {}
 };
 
-// Реализация AMDProcessor
+// Реализация процессора AMD
 class AMDProcessor : public IProcessor
 {
-private:
-    std::string m_version;
-    ProcessorType m_type;
-    double m_speed;
+protected:
+    std::string Version;       // Версия процессора
+    ProcessorType Type;        // Тип процессора
+    double Speed;              // Скорость процессора
 
 public:
-    AMDProcessor(double speed, ProcessorType type, std::string version)
-        : m_version(version), m_type(type), m_speed(speed)
-    {}
+    AMDProcessor() {}
 
-    std::string GetProcessorInfo() override
+    // Установка параметров процессора AMD
+    void SetProcessor(std::string version, ProcessorType type, double speed)
     {
-        return "AMD Processor: " + m_version + ", Speed: " + std::to_string(m_speed) + ", Type: " + std::to_string(static_cast<int>(m_type));
+        Version = version;
+        Type = type;
+        Speed = speed;
     }
+
+    // Получение информации о процессоре AMD
+    void GetInfo()
+    {
+        std::cout << "Processor for " << Version << " Speed: " << Speed << " Type: x" << Type << "\n";
+    }
+
+    // Деструктор процессора AMD
+    ~AMDProcessor() {}
 };
 
+// Класс Computer
 class Computer
 {
-private:
-    std::shared_ptr<IProcessor> m_processor;
+    // Приватное поле класса, которое является указателем на объект
+    // процессора. Оно используется для хранения экземпляра процессора, который будет установлен
+    // для данного компьютера.
+    IProcessor* Processor;
 
 public:
-    void SetProcessor(std::shared_ptr<IProcessor> processor)
+    // конструктор класса Computer. Принимает указатель на объект процессора в качестве аргумента
+    // и инициализирует поле Processor этим указателем.
+    Computer(IProcessor* processor) : Processor(processor) {}
+
+    // метод, позволяющий установить процессор для компьютера. Принимает указатель на объект
+    // процессора в качестве аргумента и присваивает его полю Processor.
+    void SetProc(IProcessor* processor)
     {
-        m_processor = processor;
+        Processor = processor;
     }
 
-    std::string GetProcessorInfo()
+    // Получение информации о процессоре
+    void Info()
     {
-        if (m_processor)
-            return m_processor->GetProcessorInfo();
-        else
-            return "No processor set";
+        Processor->GetInfo();
     }
 };
 
