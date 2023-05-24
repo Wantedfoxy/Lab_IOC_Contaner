@@ -1,20 +1,14 @@
-#include <QCoreApplication>
 #include "IOCContainer.h"
 #include "Computer.h"
 
 // Инициализируем ненулевым числом, иначе будет ошибка при компиляции "неразрешенный внешний символ"
 int IOCContainer::s_nextTypeId = 1;
 
-int main(int argc, char *argv[])
+int main()
 {
-    // Создаем объект приложения QCoreApplication
-    QCoreApplication a(argc, argv);
 
     // Создаем экземпляр контейнера для управления зависимостями (IOC)
     IOCContainer injector;
-
-    // Регистрируем класс AMDProcessor как реализацию интерфейса IProcessor
-    injector.RegisterInstance<IProcessor, AMDProcessor>();
 
     // Первый тест
     // Регистрируем класс IntelProcessor как реализацию интерфейса IProcessor
@@ -32,6 +26,8 @@ int main(int argc, char *argv[])
     PK1.Info();
 
     // Второй тест
+    // Регистрируем класс AMDProcessor как реализацию интерфейса IProcessor
+    injector.RegisterInstance<IProcessor, AMDProcessor>();
     // Получаем объект процессора через IOC-контейнер и устанавливаем его параметры
     // В данном случае, используется реализация AMDProcessor с версией "AMD",
     // типом процессора x64 и скоростью 5200
@@ -42,7 +38,4 @@ int main(int argc, char *argv[])
 
     // Выводим информацию о процессоре, используемом в компьютере PK2
     PK2.Info();
-
-    // Запускаем цикл обработки событий приложения и возвращаем его код завершения
-    return a.exec();
 }

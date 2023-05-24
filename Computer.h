@@ -49,7 +49,9 @@ public:
     }
 
     // Деструктор процессора Intel
-    ~IntelProcessor() {}
+    ~IntelProcessor() {
+        std::cout << "Intel destructor\n";
+    }
 };
 
 // Реализация процессора AMD
@@ -78,7 +80,9 @@ public:
     }
 
     // Деструктор процессора AMD
-    ~AMDProcessor() {}
+    ~AMDProcessor() {
+        std::cout << "AMD destructor\n";
+    }
 };
 
 // Класс Computer
